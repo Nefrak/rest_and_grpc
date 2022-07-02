@@ -1,3 +1,4 @@
+import sys
 import requests
 from ArgParser import ArgParser
 import json
@@ -21,7 +22,8 @@ def write_content_to_output(out_content, output):
 '''
 Function organize content of file and write to specified output
 @param response is given response from rest
-@param parametres is dictionary with default parametres
+@param info_type is subcommand version (response data)
+@return out_content is string representing content of response
 '''
 def organize_out_content_rest(response, info_type):
     out_content = ''
@@ -36,7 +38,7 @@ def organize_out_content_rest(response, info_type):
 '''
 Function organize content of file and write to specified output
 @param response is given response from grpc
-@param parametres is dictionary with default parametres
+@return out_content is string representing content of response
 '''
 def organize_out_content_stat_grpc(response):
     out_content = ''
@@ -49,12 +51,12 @@ def organize_out_content_stat_grpc(response):
     out_content += '\tmimetype: "' + response.data.mimetype + '"\n'
     out_content += '\tname: "' + response.data.name + '"\n'
     out_content += '}'
-
     return out_content
 
 '''
 Function connecting to server and getting file using rest
 @param parametres is dictionary with default parametres
+@return out_content is string representing content of response
 @misc more/different reaction to another status codes may be added
 '''
 def rest_connection(parametres):
@@ -62,6 +64,7 @@ def rest_connection(parametres):
         response = requests.get(parametres['base-url'] + 'file/' + parametres['uuid'] + '/' + parametres['info_type'] + '/')
     except Exception as error:
         return 'Connection error.\n' + repr(error)
+
     if(response.status_code == 200):
         out_content = organize_out_content_rest(response, parametres['info_type'])
     elif(response.status_code == 404):
@@ -71,6 +74,7 @@ def rest_connection(parametres):
 '''
 Function connecting to server and getting file using grcp
 @param parametres is dictionary with default parametres
+@return reply is string representing content of response
 '''
 def grpc_connection(parametres):
     reply = ''
@@ -96,8 +100,9 @@ main function
 '''
 def main():
     parser = ArgParser()
-    parser.parse_arguments()
-    parametres = parser.dictionary
+    argv = sys.argv
+    parser.parse_arguments(argv)
+    parametres = parser.parametres
     
     if(parametres['help_flag'] == True):
         print(parser.help_message())

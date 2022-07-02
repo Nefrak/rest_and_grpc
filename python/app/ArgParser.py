@@ -1,15 +1,18 @@
-import sys
 import re
 
 class ArgParser:
     def __init__(self):
-        self.dictionary = self.default_subcommands() | self.default_options() | self.default_flags()
+        self.parametres = self.default_subcommands() | self.default_options() | self.default_flags()
+        self.help_message = self.default_help_message()
+
+    def set_to_default(self):
+        self.parametres = self.default_subcommands() | self.default_options() | self.default_flags()
         self.help_message = self.default_help_message()
 
     '''
-    Function of default subcommands for self.dictionary in aplication
+    Function of default subcommands for self.parametres in aplication
     @return dictionary of default subcommands
-    @misc for proper parsing of additional subcommands - self.get_subcommands() must be updated
+    @misc for proper parsing of additional subcommands - self.set_subcommands() must be updated
     '''
     def default_subcommands(self):
         return {
@@ -18,7 +21,7 @@ class ArgParser:
         }
 
     '''
-    Function of default options for self.dictionary in aplication
+    Function of default options for self.parametres in aplication
     @return dictionary of default options
     '''
     def default_options(self):
@@ -31,7 +34,7 @@ class ArgParser:
         }
 
     '''
-    Function of default flags for self.dictionary in aplication
+    Function of default flags for self.parametres in aplication
     @return dictionary of default flags
     '''    
     def default_flags(self):
@@ -59,6 +62,7 @@ class ArgParser:
         message += '\t --grpc-server=NETLOC\tSet a host and port of the gRPC server. Default is localhost:50051.\n'
         message += '\t --base-url=URL\t\tSet a base URL for a REST server. Default is http://localhost/.\n'
         message += '\t --output=OUTPUT\tSet the file where to store the output. Default is -, i.e. the stdout.\n'
+        message += '\t --size=CHUNCK\tSet the size of maximum chunk when using gRPC read.\n'
 
         return message
 
@@ -68,10 +72,10 @@ class ArgParser:
     '''
     def check_help(self, argv):
         if(len(argv) == 2):
-            r = re.compile('^--help$')
+            r = re.compile('^--help')
             matchlist = list(filter(r.match, argv))
             if(len(matchlist) == 1):
-                self.dictionary['help_flag'] = True
+                self.parametres['help_flag'] = True
 
     '''
     Function for obtaining value of first match
@@ -90,7 +94,7 @@ class ArgParser:
     '''
     Function sets options to values past in arguments
     @param opt is string representing option
-    @param key is key to dictionary passed in self.dictionary
+    @param key is key to dictionary passed in self.parametres
     @param argv is array of arguments
     @return argv is list of unprocessed arguments
     '''
@@ -98,16 +102,16 @@ class ArgParser:
         regex = re.compile(opt)
         match = self.get_first_match(regex, argv)
         if(match != '' and match != 'error'):
-            self.dictionary[key] = match
+            self.parametres[key] = match
         elif(match == 'error'):
-            self.dictionary['error_flag'] = True
+            self.parametres['error_flag'] = True
         argv = [i for i in argv if not regex.match(i)]
         return argv
 
     '''
     Function sets options to values past in arguments
     @param opt is string representing option
-    @param key is key to dictionary passed in self.dictionary
+    @param key is key to dictionary passed in self.parametres
     @param argv is array of arguments
     @return argv is list of unprocessed arguments
     '''
@@ -115,9 +119,9 @@ class ArgParser:
         regex = re.compile(opt)
         matchlist = list(filter(regex.match, argv))
         if(len(matchlist) == 1):
-            self.dictionary[key] = matchlist[0]
+            self.parametres[key] = matchlist[0]
         elif(len(matchlist) > 1):
-            self.dictionary['error_flag'] = True
+            self.parametres['error_flag'] = True
         argv = [i for i in argv if not regex.match(i)]
         return argv
 
@@ -138,7 +142,7 @@ class ArgParser:
     @param argv is array of arguments
     @return argv is list of unprocessed arguments
     '''
-    def get_subcommands(self, argv):
+    def set_subcommands(self, argv):
         if(len(argv) == 3):     #after removal of options there should be exactly 3
             opt = '^stat$'
             key = 'info_type'
@@ -149,20 +153,19 @@ class ArgParser:
             argv = self.set_subcommand(opt, key, argv)
 
             if(len(argv) == 2):
-                self.dictionary['uuid'] = argv[1]
+                self.parametres['uuid'] = argv[1]
             else:
-                self.dictionary['error_flag'] = True
+                self.parametres['error_flag'] = True
         else:
-            self.dictionary['error_flag'] = True
+            self.parametres['error_flag'] = True
 
     '''
     Function parsing starting arguments
-    @param self.dictionary is dictionary with default self.dictionary
-    @return self.dictionary dictionary with self.dictionary
+    @return self.parametres dictionary with parsed arguments
     '''
-    def parse_arguments(self):
-        argv = sys.argv
+    def parse_arguments(self, argv):
         self.check_help(argv)
-        if self.dictionary['help_flag'] != True:
+        if self.parametres['help_flag'] != True:
             argv = self.set_options(argv)
-            self.get_subcommands(argv)
+            self.set_subcommands(argv)
+        return self.parametres

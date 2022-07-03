@@ -13,7 +13,7 @@
         - service_file_pb2_grpc.py - specifikace pro grpc server
         - service_file_pb2.py - specifikace pro grpc server
         - test_file-client.py - unit testy
-        - test.txt - soubor jehož obsah je vracen rest serverem.
+        - test.txt - soubor jehož obsah je vracen rest serverem (pro testování)
     - README.rts - popis zadané aplikace
     - rest_file.rts - popis rest api
     - service_file.proto - popis grpc
@@ -36,11 +36,12 @@
 - os
 
 ## Příklad spuštění scriptů
-python3 file-client.py --base-url=http://127.0.0.1:5000/ --backend=rest --size=2 read 9c465aa7-05fd-46eb-b759-344c48abc85f
+python3 file-client.py --base-url=http://127.0.0.1:5000/ --backend=rest read 9c465aa7-05fd-46eb-b759-344c48abc85f
 python3 test_file-client.py
 
 ## Aplikace
 Implementován jak rest, tak grpc. Lze rozšířit, například u restu by šlo implementovat více HTTP metod a také reakce na víc různých status kódů.
+Vyvíjeno a testováno na linuxu (Ubuntu 22.04 LTS). Grpc také otestováno na windows.
 
 ## Testy
 Jednoduché unit testy. Je dobré podotknout, že unit testy pro ArgParser by se ideálně měli rozdělit pro test jednotlivých metod. 

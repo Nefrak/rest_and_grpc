@@ -2,11 +2,17 @@ import re
 
 class ArgParser:
     def __init__(self):
-        self.parametres = self.default_subcommands() | self.default_options() | self.default_flags()
+        self.subcommands = self.default_subcommands()
+        self.options = self.default_options()
+        self.flags = self.default_flags()
+        self.parametres = self.subcommands | self.options | self.flags
         self.help_message = self.default_help_message()
 
     def set_to_default(self):
-        self.parametres = self.default_subcommands() | self.default_options() | self.default_flags()
+        self.subcommands = self.default_subcommands()
+        self.options = self.default_options()
+        self.flags = self.default_flags()
+        self.parametres = self.subcommands | self.options | self.flags
         self.help_message = self.default_help_message()
 
     '''
@@ -131,7 +137,7 @@ class ArgParser:
     @return argv is list of unprocessed arguments
     '''
     def set_options(self, argv):
-        for key_option in self.default_options():
+        for key_option in self.options:
             opt = '^--' + key_option + '='
             argv = self.set_option(opt, key_option, argv)
 
@@ -141,9 +147,10 @@ class ArgParser:
     Function sets subcommands values to values in arguments
     @param argv is array of arguments
     @return argv is list of unprocessed arguments
+    @misc maybe i will update it based on position (in dictionary = in argv) so that it is automated if i add more subcommands, but it limits freedom little
     '''
     def set_subcommands(self, argv):
-        if(len(argv) == 3):     #after removal of options there should be exactly 3
+        if(len(argv) == len(self.subcommands) + 1):     #after removal of options there should be only subcommands + 1
             opt = '^stat$'
             key = 'info_type'
             argv = self.set_subcommand(opt, key, argv)

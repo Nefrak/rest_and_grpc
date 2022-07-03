@@ -16,7 +16,7 @@ class TestClient(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.file_client = importlib.import_module('file-client')
-        cls.grpc_server_thread = threading.Thread(target=run_server, name='Server', args=[5]) #runs for ten seccond, but that should be enought to run tests
+        cls.grpc_server_thread = threading.Thread(target=run_server, name='Server', args=[5]) #runs for five secconds, that should be enought to run tests
         cls.grpc_server_thread.start()
         time.sleep(0.1) #wait for server to start
         

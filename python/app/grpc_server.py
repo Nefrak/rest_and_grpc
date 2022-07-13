@@ -18,7 +18,7 @@ class FileServicer(service_file_pb2_grpc.FileServicer):
         return reply
 
     def read(self, request, context):
-        content = bytes.fromhex('636f6e74656e74')
+        content = bytes("content", 'utf-8')
 
         prew_i = 0
         i = request.size

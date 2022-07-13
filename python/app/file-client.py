@@ -32,7 +32,7 @@ def organize_out_content_rest(response, info_type):
     elif(info_type == 'read'):
         out_content = 'Content-Disposition ' + response.headers['Content-Disposition'] + '\n'
         out_content += 'Content-Type ' + response.headers['Content-Type'] + '\n'
-        out_content += str(response.content.hex())
+        out_content += str(response.content, 'utf-8')
     return out_content
 
 '''
@@ -90,7 +90,7 @@ def grpc_connection(parametres):
                 request = service_file_pb2.ReadRequest(uuid = uu, size = parametres['size'])
                 stream = stub.read(request)
                 for read_reply in stream:
-                    reply += str(read_reply.data.data.hex())
+                    reply += str(read_reply.data.data, 'utf-8')
             return reply
     except Exception as error:
         return 'Connection error.\n' + repr(error)

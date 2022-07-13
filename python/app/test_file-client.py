@@ -62,7 +62,7 @@ class TestClient(unittest.TestCase):
         parametres = {'grpc-server' : 'localhost:50051', 'uuid' : '9c465aa7-05fd-46eb-b759-344c48abc85f', 'info_type' : 'stat', 'output' : '', 'size' : 3}
         self.assertEqual(self.file_client.grpc_connection(parametres), self.grpc_stat('1656633600', '0', '7', 'txt', 'asd'))
         parametres['info_type'] = 'read'
-        self.assertEqual(self.file_client.grpc_connection(parametres), '636f6e74656e74')
+        self.assertEqual(self.file_client.grpc_connection(parametres), "content")
 
         #wrong uuid
         parametres['uuid'] = 'asd'
